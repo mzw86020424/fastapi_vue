@@ -1,9 +1,16 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <a v-on:click="getGreeting">get</a>
-    <h1>{{ info }}</h1>
-    <a v-on:click="removeGreeting">remove</a>
+
+    <h3>GET USER</h3>
+    <input type="text" v-model="userId" placeholder="user id">
+    <button v-on:click="getUser">get user</button>
+    <h3>POST USER</h3>
+    <input type="email" v-model="email" placeholder="email">
+    <input type="password" v-model="password" placeholder="password">
+    <button v-on:click="postUser">post user</button>
+    <h1>{{ data }}</h1>
+    <a v-on:click="removeData">remove</a>
   </div>
 </template>
 
@@ -16,18 +23,30 @@ export default {
   },
   data() {
     return {
-      info: null
+      data: null,
+      userId: null,
+      email: null,
+      password: null,
     }
   },
   methods: {
-    getGreeting() {
+    getUser() {
       axios
-        .get('http://localhost:8000')
-        .then(response => (this.info = response.data.message))
-        .catch(e => {this.info = "エラー！！　"+e})
+        .get(`http://localhost:8000/users/${this.userId}`)
+        .then(response => (this.data = "user:" + response.data.id + " is exists!"))
+        .catch(this.data = "user:" + this.userId + " is not exists.")
     },
-    removeGreeting() {
-      this.info = null
+    postUser() {
+      axios
+        .post(`http://localhost:8000/users/`,{
+          "email": this.email,
+          "password": this.password,
+        })
+        .then(response => (this.data = "user:" + response.data.id + " is created!"))
+        .catch(e => {this.data = "エラー！！　"+e})
+    },
+    removeData() {
+      this.data = null
     }
   },
 }
